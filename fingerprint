@@ -1,0 +1,39 @@
+#include <Adafruit_Fingerprint.h>
+#include <SoftwareSerial.h>
+// Create a SoftwareSerial connection
+SoftwareSerial mySerial(2, 3); // RX (2), TX (3)
+// Initialize fingerprint sensor object
+Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
+void setup() {
+ Serial.begin(9600);
+ while (!Serial); // For Leonardo/Micro boards
+ Serial.println("Fingerprint Sensor Test");
+ finger.begin(57600); // Default baud rate for most sensors
+ if (finger.verifyPassword()) {
+ Serial.println("Fingerprint sensor detected!");
+ } else {
+ Serial.println("Fingerprint sensor not found :(");
+ while (1) { delay(1); } // Halt if sensor not found
+ }
+}
+void loop() {
+ getFingerprintID();
+ delay(1000); // Wait 1 second before next read
+}
+uint8_t getFingerprintID() {
+ uint8_t p = finger.getImage();
+ if (p != FINGERPRINT_OK) return p;
+ p = finger.image2Tz();
+ if (p != FINGERPRINT_OK) return p;
+ p = finger.fingerSearch();
+ if (p == FINGERPRINT_OK) {
+ Serial.println(" Fingerprint matched!");
+ Serial.print("Matched ID: "); Serial.println(finger.fingerID);
+ Serial.print("Confidence: "); Serial.println(finger.confidence);
+ } else if (p == FINGERPRINT_NOTFOUND) {
+ Serial.println(" Fingerprint not found");
+ } else {
+ Serial.println(" Error reading fingerprint");
+ }
+ return p;
+}
