@@ -1,0 +1,16 @@
+// LM35 Temperature Sensor using Arduino
+// LM35 OUT connected to Analog Pin A1
+const int sensorPin = A1; // LM35 output connected to A1
+void setup() {
+ Serial.begin(9600);
+ Serial.println("LM35 Temperature Sensor");
+}
+void loop() {
+ int sensorValue = analogRead(sensorPin); // Read analog value from A1
+ float voltage = sensorValue * (5.0 / 1023.0); // Convert ADC value to voltage (0–5V)
+ float temperatureC = voltage * 100; // 10 mV per °C for LM35
+ Serial.print("Temperature: ");
+ Serial.print(temperatureC);
+ Serial.println(" °C");
+ delay(1000); // Wait 1 second before next reading
+}
