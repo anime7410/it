@@ -1,0 +1,42 @@
+#include <DHT.h>
+
+// ====== CONFIG ======
+#define DHTPIN 2        // Data pin connected to D2
+#define DHTTYPE DHT11   // Change to DHT22 if you're using it
+#define SAMPLE_MS 2000  // Read every 2 seconds
+// ====================
+
+DHT dht(DHTPIN, DHTTYPE);
+unsigned long lastRead = 0;
+
+void setup() {
+  Serial.begin(9600);
+  while (!Serial) { /* wait for serial */ }
+  dht.begin();
+  Serial.println(F("DHTxx Temperature & Humidity Reader"));
+}
+
+void loop() {
+  unsigned long now = millis();
+  if (now - lastRead < SAMPLE_MS) return;
+  lastRead = now;
+
+  float h = dht.readHumidity();
+  float tC = dht.readTemperature();      // Celsius
+  float tF = dht.readTemperature(true);  // Fahrenheit
+
+  if (isnan(h) || isnan(tC) || isnan(tF)) {
+    Serial.println(F("Failed to read from DHT sensor!"));
+    return;
+  }
+
+  // Optional: compute heat index
+  float hic = dht.computeHeatIndex(tC, h, false); // Celsius
+  float hif = dht.computeHeatIndex(tF, h);        // Fahrenheit
+
+  Serial.print(F("Humidity: ")); Serial.print(h); Serial.print(F(" %  "));
+  Serial.print(F("Temp: ")); Serial.print(tC); Serial.print(F(" °C / "));
+  Serial.print(tF); Serial.print(F(" °F  "));
+  Serial.print(F("HeatIndex: ")); Serial.print(hic); Serial.print(F(" °C / "));
+  Serial.print(hif); Serial.println(F(" °F"));
+}
