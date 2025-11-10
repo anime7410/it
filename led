@@ -1,0 +1,51 @@
+LED Interfacing Code
+
+
+#include <pic18f4550.h>
+void delay() {
+    int i, j;
+    for(i = 0; i < 500; i++) {
+        for(j = 0; j < 500; j++) {
+        }
+    }
+}
+void main(void) {
+    TRISB = 0x00;     // Configure PORTB as output
+    LATB = 0x00;      // Initialize PORTB to 0 (all LEDs off)
+    
+    while (1) {
+        LATB = 0xFF;  // Turn ON all LEDs
+        delay();
+        LATB = 0x00;  // Turn OFF all LEDs
+        delay();
+    }
+}
+
+
+
+
+
+
+
+
+LED Alternate Blinking
+
+
+#include <pic18f4550.h>
+void delay() {
+    int i, j;
+    for(i = 0; i < 500; i++) {
+        for(j = 0; j < 500; j++) {
+        }
+    }
+}
+void main(void) {
+    TRISB = 0x00;   // Set PORTB as output
+    LATB = 0x00;    // Clear all PORTB LEDs
+    while (1) {
+        LATB = 0xAA;    // Binary: 10101010 -> Even LEDs ON
+        delay();
+        LATB = 0x55;    // Binary: 01010101 -> Odd LEDs ON
+        delay();
+    }
+}
