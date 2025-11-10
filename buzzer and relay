@@ -1,0 +1,54 @@
+LED, BUZZER, RELAY
+
+
+
+#include <PIC18F4550.h>
+void delay()
+{
+    unsigned int i;
+    for(i = 0; i < 30000; i++);
+}
+void main()
+{
+    unsigned char i, key = 0;
+    TRISB = 0x00;      // PORTB as output (for LEDs)
+    LATB = 0x00;       // Clear PORTB
+    ADCON1 = 0x0F;     // Set PORTA pins as digital
+    TRISAbits.TRISA2 = 1;  // Set RA2 as input (Button 1)
+    TRISAbits.TRISA3 = 1;  // Set RA3 as input (Button 2)
+    TRISAbits.TRISA5 = 0;  // Set RA5 as output (Buzzer/Relay)
+    TRISAbits.TRISA4 = 0;  // Set RA4 as output (Relay/Buzzer)
+    while(1)
+    {
+        // If button pressed on RA2  key = 0
+        if(PORTAbits.RA2 == 0) key = 0;
+        // If button pressed on RA3  key = 1
+        if(PORTAbits.RA3 == 0) key = 1;
+        if(key == 0)
+        {
+            LATAbits.LATA4 = 1;   // Turn ON RA4
+            LATAbits.LATA5 = 0;   // Turn OFF RA5
+            // Left to right LED chase
+            for(i = 0; i < 8; i++)
+            {
+                LATB = 1 << i;
+                delay();
+                LATB = 0x00;
+                delay();
+            }
+        }
+        if(key == 1)
+        {
+            LATAbits.LATA4 = 0;   // Turn OFF RA4
+            LATAbits.LATA5 = 1;   // Turn ON RA5
+            // Right to left LED chase
+            for(i = 7; i > 0; i--)
+            {
+                LATB = 1 << i;
+                delay();
+                LATB = 0x00;
+                delay();
+            }
+        }
+    }
+}
